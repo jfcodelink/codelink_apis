@@ -71,4 +71,9 @@ class User extends Authenticatable
     public function validatePassword($password){
         return md5($password) === $this->password;
     }
+
+    public function otherInformation()
+    {
+        return $this->hasOne(OtherInformation::class, 'employee_id');
+    }
 }
