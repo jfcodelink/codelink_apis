@@ -17,9 +17,31 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'employee_id',
+        'employee_code',
+        'first_name',
+        'last_name',
         'email',
         'password',
+        'dob',
+        'contact',
+        'alt_contact',
+        'address',
+        'profile_pic',
+        'gender',
+        'role_as',
+        'sub_role',
+        'credits',
+        'is_deleted',
+        'created_on',
+        'is_updated',
+        'salary',
+        'status',
+        'about_me',
+        'skills',
+        'token',
+        'company_gmail_address',
+        'remember_token',
     ];
 
     /**
@@ -43,5 +65,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function validatePassword($password){
+        return md5($password) === $this->password;
     }
 }
