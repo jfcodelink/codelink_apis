@@ -31,12 +31,13 @@ class AuthController extends Controller
             return response()->json(['status' => 'failed', 'message' => 'Invalid login credentials. Please try again.'], 422);
         }
 
-        dd(Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']]));
-        $token = $user->createToken('token')->plainTextToken;
+        $token = $user->createToken('user_token')->plainTextToken;
 
-        $request->session()->put('token', $token);
+        Auth::login($user);
+        session()->put('token', $token);
         return response(
             [
+                'token' => $token,
                 'status' => 'success',
                 'message' => "Login successfully",
             ],
@@ -49,7 +50,7 @@ class AuthController extends Controller
         if ($request->user()) {
             // Delete all tokens associated with the user
             $request->user()->tokens()->delete();
-            $request->session()->forget('token');
+            session()->forget('user_token');
 
             // Return a success response
             return response([
