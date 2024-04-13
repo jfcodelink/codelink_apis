@@ -9,77 +9,91 @@ use App\Models\News;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
     public function get_recent_news(Request $request)
     {
-        $news = News::select('news.*', DB::raw("CONCAT(UPPER(SUBSTRING(users.first_name, 1, 1)), LOWER(SUBSTRING(users.first_name, 2))) AS user_name"), DB::raw("DATE_FORMAT(news.created_on, '%d-%b-%Y') AS formatted_created_on"))
-            ->join('users', 'news.user_id', '=', 'users.id')
-            ->whereNull('news.is_deleted')
-            ->orderBy('news.created_on', 'DESC')
-            ->get();
+        try {
+            $news = News::with('user') // Load the user relationship
+                ->whereNull('is_deleted')
+                ->orderByDesc('created_on')
+                ->get();
 
-        $totalCount =$news->count();
+            $totalCount = $news->count();
 
-        $data['records'] = $news;
-        $data['totalCount'] = $totalCount;
+            $data['records'] = $news;
+            $data['totalCount'] = $totalCount;
 
-        if ($news->isNotEmpty()) {
-            $data['status'] = true;
-        } else {
-            $data['status'] = false;
+            $data['status'] = $news->isNotEmpty();
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            Log::error('Error fetching recent news: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
         }
-
-        return response()->json($data);
     }
 
     public function get_birthday_records(Request $request)
     {
-        $today = now()->format('Y-m-d');
-        $seven_days_later = now()->addDays(7)->format('Y-m-d');
-        $user_id = Auth::user()->id;
+        try {
+            $today = now()->format('Y-m-d');
+            $seven_days_later = now()->addDays(7)->format('Y-m-d');
 
-        $users = User::select('users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name', 'oi.*')
-            ->selectRaw('CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d")) AS birthday_date')
-            ->selectRaw('CURRENT_DATE() AS to_day')
-            ->selectRaw('SUBDATE(SUBDATE(CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d")), 1), (SELECT COUNT(*) AS cnt FROM `holiday_tbl` AS h WHERE h.date >= CURRENT_DATE() AND h.date <= birthday_date)) AS after_holiday')
-            ->leftJoin('other_information as oi', 'oi.employee_id', '=', 'users.id')
-            ->whereNotIn('users.role_as', [1, 2])
-            ->where('users.status', 1)
-            ->havingRaw("'$today' <= birthday_date AND '$today' >= after_holiday")
-            ->get();
+            $users = User::with('otherInformation') // Load the relationship with other information
+                ->whereNotIn('role_as', [1, 2])
+                ->where('status', 1)
+                ->whereHas('otherInformation', function ($query) use ($today, $seven_days_later) {
+                    $query->whereRaw('CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d")) BETWEEN ? AND ?', [$today, $seven_days_later])
+                        ->whereNotExists(function ($subquery) {
+                            $subquery->select(DB::raw(1))
+                                ->from('holiday_tbl')
+                                ->whereRaw('holiday_tbl.date >= CURRENT_DATE()')
+                                ->whereRaw('holiday_tbl.date <= CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d"))');
+                        });
+                })
+                ->get(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name']); // Select only necessary columns
 
-        $birthday_records = $users->toArray();
-
-        return response()->json($birthday_records);
+            return response()->json($users);
+        } catch (\Exception $e) {
+            Log::error('Error fetching birthday records: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+        }
     }
 
     public function get_leaves_records(Request $request)
     {
-        $today = now()->format('Y-m-d');
-        $seven_days_later = now()->addDays(7)->format('Y-m-d');
-        $user_id = auth()->id(); // Assuming you're using Laravel's authentication
+        try {
+            $today = now()->format('Y-m-d');
+            $seven_days_later = now()->addDays(7)->format('Y-m-d');
+            $user_id = Auth::guard('sanctum')->user()->id;
 
-        $upcoming_leave = Leave::where('user_id', $user_id)
-            ->whereBetween('leave_from', [$today, $seven_days_later])
-            ->get()
-            ->toArray();
+            $upcoming_leave = Leave::where('user_id', $user_id)
+                ->whereBetween('leave_from', [$today, $seven_days_later])
+                ->get();
 
             return response()->json($upcoming_leave);
-
+        } catch (\Exception $e) {
+            Log::error('Error fetching leaves records: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+        }
     }
 
     public function get_upcoming_holiday(Request $request)
     {
-        $today = now()->format('Y-m-d');
-        $last_day_of_next_month = now()->addMonth()->endOfMonth()->format('Y-m-d');
+        try {
+            $today = now()->format('Y-m-d');
+            $last_day_of_next_month = now()->addMonth()->endOfMonth()->format('Y-m-d');
 
-        $upcoming_holiday = Holiday::whereBetween('date', [$today, $last_day_of_next_month])
-            ->orderBy('date', 'ASC')
-            ->get()
-            ->toArray();
+            $upcoming_holiday = Holiday::whereBetween('date', [$today, $last_day_of_next_month])
+                ->orderBy('date', 'ASC')
+                ->get();
+
             return response()->json($upcoming_holiday);
-
+        } catch (\Exception $e) {
+            Log::error('Error fetching upcoming holidays: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+        }
     }
 }
