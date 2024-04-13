@@ -31,7 +31,7 @@ class AuthController extends Controller
             return response()->json(['status' => 'failed', 'message' => 'Invalid login credentials. Please try again.'], 422);
         }
 
-        $token = $user->createToken('user_token')->plainTextToken;
+        $token = $user->createToken('token')->plainTextToken;
 
         Auth::login($user);
         session()->put('token', $token);
@@ -46,13 +46,10 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
-        // Check if the request has a user
-        if ($request->user()) {
-            // Delete all tokens associated with the user
-            $request->user()->tokens()->delete();
-            session()->forget('user_token');
+        if (Auth::guard('sanctum')->user()) {
+            Auth::guard('sanctum')->user()->tokens()->delete();
+            session()->forget('token');
 
-            // Return a success response
             return response([
                 'status' => 'success',
                 'message' => 'Logged out successfully.',

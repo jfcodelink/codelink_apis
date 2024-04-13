@@ -16,10 +16,8 @@ class check_login
      */
     public function handle(Request $request, Closure $next): Response
     {
-        dd(session()->has('token'));
-        if (session()->has('token')) {
-            $token = $request->session()->get('token');
-            $request->headers->set('Authorization', 'Bearer ' . $token);
+        if (Auth::guard('sanctum')->check()) {
+            $token = session()->get('token');
             if (Auth::guard('sanctum')->user()) {
                 return $next($request);
             } else {
