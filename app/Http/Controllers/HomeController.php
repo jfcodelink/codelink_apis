@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
-    public function get_recent_news(Request $request)
+    public function get_news(Request $request)
     {
         try {
             $news = News::with('user') // Load the user relationship
