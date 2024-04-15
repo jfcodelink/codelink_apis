@@ -22,7 +22,7 @@ class AuthController extends Controller
                 'password' => 'required|min:6',
             ]);
             if ($validator->fails()) {
-                return response()->json(['status' => 'failed', 'message' => $validator->errors()], 422);
+                return response()->json(['status' => false, 'message' => $validator->errors()], 422);
             }
 
             $validatedData = $validator->validated();
@@ -31,7 +31,7 @@ class AuthController extends Controller
                 ->first();
 
             if (!$user || !$user->validatePassword($validatedData['password'])) {
-                return response()->json(['status' => 'failed', 'message' => 'Invalid login credentials. Please try again.'], 422);
+                return response()->json(['status' => false, 'message' => 'Invalid login credentials. Please try again.'], 422);
             }
 
             $token = $user->createToken('token')->plainTextToken;
@@ -41,14 +41,14 @@ class AuthController extends Controller
             return response(
                 [
                     'token' => $token,
-                    'status' => 'success',
+                    'status' => true,
                     'message' => "Login successfully",
                 ],
                 200,
             );
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 
@@ -60,19 +60,19 @@ class AuthController extends Controller
                 session()->forget('token');
 
                 return response([
-                    'status' => 'success',
+                    'status' => true,
                     'message' => 'Logged out successfully.',
                 ], 200);
             }
 
             // If the request does not have a user, return a failed response
             return response([
-                'status' => 'failed',
+                'status' => false,
                 'message' => 'Token mismatch. Please try again later.'
             ], 422);
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 
@@ -82,7 +82,7 @@ class AuthController extends Controller
             'email' => 'required|email|exists:users,email',
         ]);
         if ($validator->fails()) {
-            return response()->json(['status' => 'failed', 'message' => $validator->errors()], 422);
+            return response()->json(['status' => false, 'message' => $validator->errors()], 422);
         }
 
         $validatedData = $validator->validated();
@@ -92,7 +92,7 @@ class AuthController extends Controller
         $user = User::where('email', $email)->whereIn('role_as', [2, 3, 4, 5])->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found.', 'status' => false], 404);
+            return response()->json(['status' => false, 'message' => 'User not found.'], 404);
         }
 
         $token = substr(md5(uniqid(rand(), 1)), 3, 10);
@@ -103,9 +103,9 @@ class AuthController extends Controller
 
         try {
             Mail::to($email)->send(new ResetPasswordMail($user, $link));
-            return response()->json(['message' => 'Reset password link has been sent!', 'status' => true], 200);
+            return response()->json(['status' => true, 'message' => 'Reset password link has been sent!'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to send email: ' . $e->getMessage()], 500);
+            return response()->json(['status' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
         }
     }
 
@@ -130,11 +130,11 @@ class AuthController extends Controller
         ])->first();
 
         if (!$user) {
-            return response()->json(['status' => false, 'message' => 'Password reset link invalid or expired.']);
+            return response()->json(['status' => false, 'message' => 'Password reset link invalid or expired.'],422);
         }
 
         if ($user->validatePassword($validatedData['password'])) {
-            return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!']);
+            return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!'],422);
         }
 
         // Check the strength of the password
@@ -143,7 +143,7 @@ class AuthController extends Controller
         $number    = preg_match('@[0-9]@', $validatedData['password']);
 
         if (!$uppercase || !$lowercase || !$number || strlen($validatedData['password']) < 8) {
-            return response()->json(['status' => false, 'message' => 'Password should have at least 1 uppercase letter, 1 lowercase letter, 1 number, and be at least 8 characters long.']);
+            return response()->json(['status' => false, 'message' => 'Password should have at least 1 uppercase letter, 1 lowercase letter, 1 number, and be at least 8 characters long.'],422);
         }
 
         // Reset password
@@ -151,6 +151,6 @@ class AuthController extends Controller
         $user->token = ''; // Clear the reset token
         $user->save();
 
-        return response()->json(['status' => true, 'message' => 'Password reset successfully.']);
+        return response()->json(['status' => true, 'message' => 'Password reset successfully.'],200);
     }
 }

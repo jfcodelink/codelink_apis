@@ -48,7 +48,7 @@ class PolicyController extends Controller
             return response()->json(['status' => true, 'data' => $data]);
         } catch (\Exception $e) {
             Log::error('Error fetching user profile: ' . $e->getMessage());
-            return response()->json(['status' => false, 'error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 

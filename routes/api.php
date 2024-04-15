@@ -20,7 +20,7 @@ Route::group(['middleware' => ['check_login']], function () {
 
     Route::get("get_news", [HomeController::class, "get_news"])->name('get_news');
     Route::get("get_birthday_records", [HomeController::class, "get_birthday_records"])->name('get_birthday_records');
-    Route::get("get_leaves_records", [HomeController::class, "get_leaves_records"])->name('get_leaves_records');
+    Route::get("get_upcoming_leaves", [HomeController::class, "get_upcoming_leaves"])->name('get_upcoming_leaves');
     Route::get("get_upcoming_holiday", [HomeController::class, "get_upcoming_holiday"])->name('get_upcoming_holiday');
 
     Route::get("get_workload", [WorkloadController::class, "get_workload"])->name('get_workload');

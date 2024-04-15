@@ -42,11 +42,11 @@ class HolidayController extends Controller
                 ->get();
 
             $data = $records->toArray();
-            return response()->json(['status' => true, 'data' => $data]);
+            return response()->json(['status' => true,'data' => $data],200);
 
         } catch (\Exception $e) {
             Log::error('Error fetching holidays: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 }

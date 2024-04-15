@@ -36,18 +36,18 @@ class WorkloadController extends Controller
             ];
 
             if (empty($workload_with_tracker) && empty($workload_without_tracker)) {
-                return response()->json(['status' => false, 'workload_records' => $data]);
+                return response()->json(['status' => false,'message'=>'Workload is empty'],404);
             }
             $user = User::find($user_id);
 
             if (($user->role_as == 4 || $user->role_as == 5) && ($user->sub_role != 3)) {
-                return response()->json(['status' => true, 'workload_records' => $data]);
+                return response()->json(['status' => true, 'data' => $data],200);
             } else {
                 abort(403, 'Unauthorize');
             }
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message'=> 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 
@@ -115,7 +115,7 @@ class WorkloadController extends Controller
             return response()->json(['status' => false, 'message' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Error saving workloads: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 }

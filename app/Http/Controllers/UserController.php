@@ -36,10 +36,10 @@ class UserController extends Controller
                     'other_information' => $otherInformation,
                     'payout_information' => $payoutInformation,
                 ]
-            ]);
+            ],200);
         } catch (\Exception $e) {
             Log::error('Error fetching user profile: ' . $e->getMessage());
-            return response()->json(['status' => false, 'error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 
@@ -66,7 +66,7 @@ class UserController extends Controller
                 ->first();
 
             // Update password if required
-            if ($validatedData['change_pswd']) {
+            if (isset($validatedData['change_pswd'])) {
                 if ($user->validatePassword($validatedData['password'])) {
                     return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!']);
                 }
@@ -88,10 +88,10 @@ class UserController extends Controller
 
             $user->save();
 
-            return response()->json(['message' => 'Profile updated successfully!', 'status' => true]);
+            return response()->json(['message' => 'Profile updated successfully!', 'status' => true],200);
         } catch (\Exception $e) {
             Log::error('Error updating user profile: ' . $e->getMessage());
-            return response()->json(['message' => 'An unexpected error occurred. Please try again later.', 'status' => false], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
     public function get_user_guides(Request $request)
@@ -105,11 +105,11 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'data' => $userGuides
-            ]);
+            ],200);
         } catch (\Exception $e) {
             // Handle any exceptions
             Log::error('Error fetching user guides: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 }

@@ -36,12 +36,12 @@ class LeaveController extends Controller
             $data = $query->get();
 
             if (empty($data)) {
-                return response()->json(['status' => false, 'data' => $data]);
+                return response()->json(['status' => false, 'message'=>'Data not found', 'data' => $data],404);
             }
-            return response()->json(['status' => true, 'data' => $data]);
+            return response()->json(['status' => true, 'message' =>'Get leaves successfully', 'data' => $data],200);
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 
@@ -63,7 +63,7 @@ class LeaveController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $validator->errors()->first(),
-            ]);
+            ],422);
         }
 
         $user = Auth::guard('sanctum')->user();
@@ -108,7 +108,7 @@ class LeaveController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'You have already applied for this date.',
-            ]);
+            ],422);
         }
 
         $leave = new Leave();
@@ -145,12 +145,12 @@ class LeaveController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Leave applied successfully!',
-            ]);
+            ],200);
         } else {
             return response()->json([
                 'status' => false,
                 'message' => 'Leave has not been applied successfully!',
-            ]);
+            ],422);
         }
     }
 
@@ -161,7 +161,7 @@ class LeaveController extends Controller
             $leave = Leave::find($leaveId);
 
             if (!$leave) {
-                return response()->json(['status' => false, 'leaves_msg' => 'Leave not found']);
+                return response()->json(['status' => false, 'message' => 'Leave not found'],404);
             }
 
             if ($leave->status !== 1) {
@@ -179,7 +179,7 @@ class LeaveController extends Controller
             return response()->json(['status' => true, 'data' => $response]);
         } catch (\Exception $e) {
             Log::error('Error deleting leave: ' . $e->getMessage());
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
 }
