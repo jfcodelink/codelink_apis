@@ -9,4 +9,9 @@ class Leave extends Model
 {
     use HasFactory;
     protected $table = 'leaves';
+    public $timestamps = false;
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

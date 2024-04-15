@@ -69,12 +69,28 @@ class User extends Authenticatable
         ];
     }
 
-    public function validatePassword($password){
+    public function validatePassword($password)
+    {
         return md5($password) === $this->password;
     }
 
     public function otherInformation()
     {
         return $this->hasOne(OtherInformation::class, 'employee_id');
+    }
+
+    public function payoutInformation()
+    {
+        return $this->hasOne(PayoutInformation::class, 'employee_id');
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(UserSkill::class, 'user_skills', 'user_id', 'skill_id')->whereNull('is_deleted');
+    }
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }
