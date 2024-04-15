@@ -32,12 +32,16 @@ Route::group(['middleware' => ['check_login']], function () {
     Route::post('reset_password', [AuthController::class, 'reset_password'])->name('reset_password');
 
     Route::post('get_salary_records', [SalaryController::class, 'get_salary_records'])->name('get_salary_records');
+
     Route::get("get_leaves", [LeaveController::class, "get_leaves"])->name('get_leaves');
+    Route::post("add_leave", [LeaveController::class, "add_leave"])->name('add_leave');
     Route::post("delete_leave", [LeaveController::class, "delete_leave"])->name('delete_leave');
 
     Route::get("get_user_data", [UserController::class, "get_user_data"])->name('get_user_data');
     Route::get("get_user_guides", [UserController::class, "get_user_guides"])->name('get_user_guides');
+    Route::post("update_user_data", [UserController::class, "update_user_data"])->name('update_user_data');
 
     Route::get("get_policies", [PolicyController::class, "get_policies"])->name('get_policies');
+
     Route::get("get_holidays", [HolidayController::class, "get_holidays"])->name('get_holidays');
 });

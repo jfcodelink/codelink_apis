@@ -27,8 +27,6 @@ class AuthController extends Controller
 
             $validatedData = $validator->validated();
 
-            // dd(md5($validatedData['password']), $user->password);
-
             $user = User::where('email', $validatedData['email'])
                 ->first();
 
@@ -121,7 +119,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()],422);
         }
 
         $validatedData = $validator->validated();
