@@ -75,8 +75,13 @@ class UserController extends Controller
             }
 
             // Update skills and about_me if provided
-            $user->skills = $validatedData['skills'] ? implode(',', $validatedData['skills']) : null;
-            $user->about_me = $validatedData['about_me'];
+            if($request->has('skills')){
+                $user->skills = isset($validatedData['skills']) ? implode(',', $validatedData['skills']) : null;
+            }
+
+            if($request->has('about_me')){
+                $user->about_me = isset($validatedData['about_me']) ? $validatedData['about_me'] : null;
+            }
 
             // Update profile pic if provided
             if ($request->hasFile('profile_pic')) {
