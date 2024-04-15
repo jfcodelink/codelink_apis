@@ -70,6 +70,8 @@ class HomeController extends Controller
             $user_id = Auth::guard('sanctum')->user()->id;
 
             $upcoming_leave = Leave::where('user_id', $user_id)
+                ->where('is_deleted', null)
+                ->where('is_deleted', 0)
                 ->whereBetween('leave_from', [$today, $seven_days_later])
                 ->get();
 

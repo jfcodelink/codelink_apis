@@ -33,10 +33,13 @@ class WorkloadController extends Controller
                 'without_tracker' => $workload_without_tracker,
             ];
 
+            if (empty($workload_with_tracker) && empty($workload_without_tracker)) {
+                return response()->json(['status' => false, 'workload_records' => $data]);
+            }
             $user = User::find($user_id);
 
             if (($user->role_as == 4 || $user->role_as == 5) && ($user->sub_role != 3)) {
-                return response()->json(['title' => 'Workload', 'workload_records' => $data]);
+                return response()->json(['status' => true, 'workload_records' => $data]);
             } else {
                 abort(403, 'Unauthorize');
             }

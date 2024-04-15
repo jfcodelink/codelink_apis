@@ -64,17 +64,11 @@ class TimesheetController extends Controller
                 $record->lunch_time = $lunch_time;
             });
 
-            $json_data = [
-                "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => $data->count(),
-                "recordsFiltered" => $data->count(),
-                "data"            => $data,
-                "disableOrdering" => false,
-            ];
-
-            return response()->json($json_data);
+            if (empty($data)) {
+                return response()->json(['status' => false, 'data' => $data]);
+            }
+            return response()->json(['status' => true, 'data' => $data]);
         } catch (\Exception $e) {
-            dd($e->getMessage());
             Log::error('Error fetching birthday records: ' . $e->getMessage());
             return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
         }
