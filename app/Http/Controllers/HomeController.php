@@ -23,16 +23,15 @@ class HomeController extends Controller
 
             $totalCount = $news->count();
 
-            if($totalCount > 0){
+            if ($totalCount > 0) {
                 $status_code = 200;
-            }else{
+            } else {
                 $status_code = 404;
             }
 
             $data['records'] = $news;
             $data['totalCount'] = $totalCount;
-            return response()->json(['status' => true, 'data' => $data], $status_code);
-
+            return response()->json(['status' => $news->isNotEmpty(), 'data' => $data], $status_code);
         } catch (\Exception $e) {
             Log::error('Error fetching recent news: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -57,9 +56,19 @@ class HomeController extends Controller
                                 ->whereRaw('holiday_tbl.date <= CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d"))');
                         });
                 })
-                ->get(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name']); // Select only necessary columns
+                ->select(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name'])->get(); // Select only necessary columns
 
-            return response()->json(['status' => true, 'data' => $users], 200);
+            $totalCount = $users->count();
+
+            if ($totalCount > 0) {
+                $status_code = 200;
+            } else {
+                $status_code = 404;
+            }
+
+            $data['records'] = $users;
+            $data['totalCount'] = $totalCount;
+            return response()->json(['status' => $users->isNotEmpty(), 'data' => $data], $status_code);
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -75,11 +84,19 @@ class HomeController extends Controller
 
             $upcoming_leave = Leave::where('user_id', $user_id)
                 ->where('is_deleted', null)
-                ->where('is_deleted', 0)
                 ->whereBetween('leave_from', [$today, $seven_days_later])
                 ->get();
 
-            return response()->json(['status' => true, 'data' => $upcoming_leave], 200);
+            $totalCount = $upcoming_leave->count();
+
+            if ($totalCount > 0) {
+                $status_code = 200;
+            } else {
+                $status_code = 404;
+            }
+
+            $data['records'] = $upcoming_leave;
+            return response()->json(['status' => $upcoming_leave->isNotEmpty(), 'data' => $data], $status_code);
         } catch (\Exception $e) {
             Log::error('Error fetching leaves records: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);

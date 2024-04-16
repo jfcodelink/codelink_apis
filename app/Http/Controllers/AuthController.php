@@ -30,7 +30,15 @@ class AuthController extends Controller
             $user = User::where('email', $validatedData['email'])
                 ->first();
 
-            if (!$user || !$user->validatePassword($validatedData['password'])) {
+            if (!$user) {
+                return response()->json(['status' => false, 'message' => 'Employee does not exist!'], 422);
+            }
+
+            if (!$user->status) {
+                return response()->json(['status' => false, 'message' => 'You cannot log in to your account because it is not active. Please contact HR or the administrator.'], 422);
+            }
+
+            if (!$user->validatePassword($validatedData['password'])) {
                 return response()->json(['status' => false, 'message' => 'Invalid login credentials. Please try again.'], 422);
             }
 
@@ -47,7 +55,7 @@ class AuthController extends Controller
                 200,
             );
         } catch (\Exception $e) {
-            Log::error('Error fetching birthday records: ' . $e->getMessage());
+            Log::error($e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
