@@ -23,12 +23,16 @@ class HomeController extends Controller
 
             $totalCount = $news->count();
 
+            if($totalCount > 0){
+                $status_code = 200;
+            }else{
+                $status_code = 404;
+            }
+
             $data['records'] = $news;
             $data['totalCount'] = $totalCount;
+            return response()->json(['status' => true, 'data' => $data], $status_code);
 
-            $data['status'] = $news->isNotEmpty();
-
-            return response()->json(['status' => true,'data'=>$data],200);
         } catch (\Exception $e) {
             Log::error('Error fetching recent news: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -55,7 +59,7 @@ class HomeController extends Controller
                 })
                 ->get(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name']); // Select only necessary columns
 
-            return response()->json(['status' => true,'data'=>$users],200);
+            return response()->json(['status' => true, 'data' => $users], 200);
         } catch (\Exception $e) {
             Log::error('Error fetching birthday records: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -75,7 +79,7 @@ class HomeController extends Controller
                 ->whereBetween('leave_from', [$today, $seven_days_later])
                 ->get();
 
-            return response()->json(['status' => true,'data'=>$upcoming_leave],200);
+            return response()->json(['status' => true, 'data' => $upcoming_leave], 200);
         } catch (\Exception $e) {
             Log::error('Error fetching leaves records: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -92,7 +96,7 @@ class HomeController extends Controller
                 ->orderBy('date', 'ASC')
                 ->get();
 
-            return response()->json(['status' => true,'data'=>$upcoming_holiday],200);
+            return response()->json(['status' => true, 'data' => $upcoming_holiday], 200);
         } catch (\Exception $e) {
             Log::error('Error fetching upcoming holidays: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);

@@ -119,7 +119,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()],422);
+            return response()->json(['status' => false, 'message' => $validator->errors()], 422);
         }
 
         $validatedData = $validator->validated();
@@ -130,11 +130,11 @@ class AuthController extends Controller
         ])->first();
 
         if (!$user) {
-            return response()->json(['status' => false, 'message' => 'Password reset link invalid or expired.'],422);
+            return response()->json(['status' => false, 'message' => 'Password reset link invalid or expired.'], 422);
         }
 
         if ($user->validatePassword($validatedData['password'])) {
-            return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!'],422);
+            return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!'], 422);
         }
 
         // Check the strength of the password
@@ -143,14 +143,19 @@ class AuthController extends Controller
         $number    = preg_match('@[0-9]@', $validatedData['password']);
 
         if (!$uppercase || !$lowercase || !$number || strlen($validatedData['password']) < 8) {
-            return response()->json(['status' => false, 'message' => 'Password should have at least 1 uppercase letter, 1 lowercase letter, 1 number, and be at least 8 characters long.'],422);
+            return response()->json(['status' => false, 'message' => 'Password should have at least 1 uppercase letter, 1 lowercase letter, 1 number, and be at least 8 characters long.'], 422);
         }
 
         // Reset password
-        $user->password = md5($validatedData['password']);
-        $user->token = ''; // Clear the reset token
-        $user->save();
+        try {
+            $user->password = md5($validatedData['password']);
+            $user->token = ''; // Clear the reset token
+            $user->save();
 
-        return response()->json(['status' => true, 'message' => 'Password reset successfully.'],200);
+            return response()->json(['status' => true, 'message' => 'Password reset successfully.'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error resetting password: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
+        }
     }
 }

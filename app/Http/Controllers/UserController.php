@@ -48,11 +48,11 @@ class UserController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'skills' => 'nullable|array',
-                'about_me' => 'nullable|string',
+                'about_me' => 'nullable',
                 'profile_pic' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
                 'change_pswd' => 'boolean',
-                'current_password' => 'required_if:change_pswd,true|string|min:8',
-                'password' => 'required_if:change_pswd,true|string|min:8|confirmed',
+                'current_password' => 'required_if:change_pswd,true|min:8',
+                'password' => 'required_if:change_pswd,true|min:8|confirmed',
                 'password_confirmation' => 'required_if:change_pswd,true|min:8',
             ]);
 

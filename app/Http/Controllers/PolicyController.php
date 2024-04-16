@@ -13,17 +13,6 @@ class PolicyController extends Controller
     {
         try {
             $params = $request->all();
-            $column_name = '';
-            $direction = '';
-
-            // Extract sorting information
-            if (isset($params['order'][0]['column'])) {
-                $column_index = $params['order'][0]['column'];
-                $column_name = $params['columns'][$column_index]['data'];
-            }
-
-            $direction = isset($params['order'][0]['dir']) ? $params['order'][0]['dir'] : '';
-
             // Apply search filter if provided
             $where_condition = '';
             if (!empty($params['search']['value'])) {
@@ -36,16 +25,10 @@ class PolicyController extends Controller
                 $query->whereRaw($where_condition);
             }
 
-            $totalRecords = $query->count();
             $records = $query
-                ->get();
+                ->get()->toArray();
 
-            $data = [];
-            foreach ($records as $record) {
-                $data[] = $record->toArray();
-            }
-
-            return response()->json(['status' => true, 'data' => $data]);
+            return response()->json(['status' => true, 'data' => $records]);
         } catch (\Exception $e) {
             Log::error('Error fetching user profile: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
