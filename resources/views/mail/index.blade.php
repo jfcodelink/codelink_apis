@@ -26,7 +26,7 @@
 											<div style="margin-bottom:55px; text-align:left">
 												<div style="margin:-10px 60px 54px 60px; text-align:center;">
 													<a href="https://erp.codelinkinfotech.com" rel="noopener" target="_blank">
-														<img alt="Logo" src="{{ asset('email/codelink.png') }}" style="height: 35px" />
+														<img alt="Logo" src="{{ asset('public/email/codelink.png') }}" style="height: 35px" />
 													</a>
 												</div>
 											</div>
@@ -43,13 +43,13 @@
 									<tr>
 										<td align="center" valign="center" style="text-align:center; padding-bottom: 20px;">
 											<a href="https://www.linkedin.com/company/codelink-infotech/" style="margin-right:10px; text-decoration: none;">
-												<img alt="Logo" src="{{ asset('email/linkedin.png') }}" style="width: 19px;height: 21px;" />
+												<img alt="Logo" src="{{ asset('public/email/linkedin.png') }}" style="width: 19px;height: 21px;" />
 											</a>
 											<a href="https://www.instagram.com/codelinkinfotech/" style="margin-right:10px; text-decoration: none;">
-												<img alt="Logo" src="{{ asset('email/Instagram_icon.png') }}" style="width: 19px;height: 21px;"/>
+												<img alt="Logo" src="{{ asset('public/email/Instagram_icon.png') }}" style="width: 19px;height: 21px;"/>
 											</a>
 											<a href="https://www.facebook.com/codelinkinfotech" style="margin-right:10px; text-decoration: none;">
-												<img alt="Logo" src="{{ asset('email/fb.jpeg') }}" style="width: 19px;height: 21px;" />
+												<img alt="Logo" src="{{ asset('public/email/fb.jpeg') }}" style="width: 19px;height: 21px;" />
 											</a>
 										</td>
 									</tr>

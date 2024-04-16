@@ -14,11 +14,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkloadController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('send_reset_link_email', [AuthController::class, 'send_reset_link_email'])->name('send_reset_link_email');
+Route::post('reset_password', [AuthController::class, 'reset_password'])->name('reset_password');
 
 Route::group(['middleware' => ['check_login']], function () {
     Route::post("logout", [AuthController::class, "logout"])->name('logout');
-    Route::post('send_reset_link_email', [AuthController::class, 'send_reset_link_email'])->name('send_reset_link_email');
-    Route::post('reset_password', [AuthController::class, 'reset_password'])->name('reset_password');
 
     Route::get("get_news", [HomeController::class, "get_news"])->name('get_news');
     Route::get("get_birthday_records", [HomeController::class, "get_birthday_records"])->name('get_birthday_records');
