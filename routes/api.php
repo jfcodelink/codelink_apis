@@ -37,6 +37,7 @@ Route::group(['middleware' => ['check_login']], function () {
     Route::post("add_leave", [LeaveController::class, "add_leave"])->name('add_leave');
     Route::post("delete_leave", [LeaveController::class, "delete_leave"])->name('delete_leave');
 
+    Route::get("get_skills", [UserController::class, "get_skills"])->name('get_skills');
     Route::get("get_user_data", [UserController::class, "get_user_data"])->name('get_user_data');
     Route::get("get_user_guides", [UserController::class, "get_user_guides"])->name('get_user_guides');
     Route::post("update_user_data", [UserController::class, "update_user_data"])->name('update_user_data');

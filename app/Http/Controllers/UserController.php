@@ -6,6 +6,7 @@ use App\Models\OtherInformation;
 use App\Models\PayoutInformation;
 use App\Models\User;
 use App\Models\UserGuide;
+use App\Models\UserSkill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    //
     public function get_user_data(Request $request)
     {
         try {
@@ -25,20 +25,69 @@ class UserController extends Controller
 
             $user = Auth::guard('sanctum')->user();
             $otherInformation = OtherInformation::where('employee_id', $user->id)->first();
-            $payoutInformation = PayoutInformation::where('employee_id', $user->id)->first();
-            $skills = $user->skills;
+
+            $skillIds = explode(',', $user->skills);
+
+            $skills = UserSkill::whereIn('id', $skillIds)->pluck('skills');
+            $userData = [
+                'id' => $user->id,
+                'employee_id' => $user->employee_id,
+                'employee_code' => $user->employee_code,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'dob' => $user->dob,
+                'contact' => $user->contact,
+                'alt_contact' => $user->alt_contact,
+                'profile_pic' => $user->profile_pic,
+                'role_as' => $user->role_as,
+                'sub_role' => $user->sub_role,
+                'about_me' => $user->about_me,
+                'skillIds' => $user->skills,
+                'skills' => $skills,
+            ];
+
+            $otherInformationData = [
+                'id' => $otherInformation->id,
+                'employee_id' => $otherInformation->employee_id,
+                'user_photo' => $otherInformation->user_photo,
+                'emergency_contact_name' => $otherInformation->emergency_contact_name,
+                'emergency_contact_relation' => $otherInformation->emergency_contact_relation,
+                'emergency_contact_number' => $otherInformation->emergency_contact_number,
+                'date_of_joining' => $otherInformation->date_of_joining,
+                'probation' => $otherInformation->probation,
+                'training' => $otherInformation->training,
+                'bond' => $otherInformation->bond,
+                'bank_name' => $otherInformation->bank_name,
+                'account_number' => $otherInformation->account_number,
+                'ifsc_code' => $otherInformation->ifsc_code,
+                'pancard' => $otherInformation->pancard,
+            ];
 
             return response()->json([
                 'status' => true,
                 'data' => [
-                    'user' => $user,
-                    'skills' => $skills,
-                    'other_information' => $otherInformation,
-                    'payout_information' => $payoutInformation,
+                    'user' => $userData,
+                    'other_information' => $otherInformationData,
                 ]
-            ],200);
+            ], 200);
         } catch (\Exception $e) {
             Log::error('Error fetching user profile: ' . $e->getMessage());
+            dd($e->getMessage());
+            return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
+        }
+    }
+
+    public function get_skills(Request $request)
+    {
+        try {
+            $userSkills = UserSkill::all();
+
+            return response()->json([
+                'status' => true,
+                'data' => $userSkills
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching user skills: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }
     }
@@ -75,11 +124,11 @@ class UserController extends Controller
             }
 
             // Update skills and about_me if provided
-            if($request->has('skills')){
+            if ($request->has('skills')) {
                 $user->skills = isset($validatedData['skills']) ? implode(',', $validatedData['skills']) : null;
             }
 
-            if($request->has('about_me')){
+            if ($request->has('about_me')) {
                 $user->about_me = isset($validatedData['about_me']) ? $validatedData['about_me'] : null;
             }
 
@@ -93,7 +142,7 @@ class UserController extends Controller
 
             $user->save();
 
-            return response()->json(['message' => 'Profile updated successfully!', 'status' => true],200);
+            return response()->json(['message' => 'Profile updated successfully!', 'status' => true], 200);
         } catch (\Exception $e) {
             Log::error('Error updating user profile: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
@@ -106,13 +155,11 @@ class UserController extends Controller
             $userGuides = UserGuide::all();
 
             // Pass data to the view
-
             return response()->json([
                 'status' => true,
                 'data' => $userGuides
-            ],200);
+            ], 200);
         } catch (\Exception $e) {
-            // Handle any exceptions
             Log::error('Error fetching user guides: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
         }

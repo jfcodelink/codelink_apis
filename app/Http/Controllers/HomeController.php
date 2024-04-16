@@ -16,7 +16,8 @@ class HomeController extends Controller
     public function get_news(Request $request)
     {
         try {
-            $news = News::with('user') // Load the user relationship
+            // Load the user relationship
+            $news = News::with('user')
                 ->whereNull('is_deleted')
                 ->orderByDesc('created_on')
                 ->get();
@@ -44,7 +45,8 @@ class HomeController extends Controller
             $today = now()->format('Y-m-d');
             $seven_days_later = now()->addDays(7)->format('Y-m-d');
 
-            $users = User::with('otherInformation') // Load the relationship with other information
+            // Load the relationship with other information
+            $users = User::with('otherInformation')
                 ->whereNotIn('role_as', [1, 2])
                 ->where('status', 1)
                 ->whereHas('otherInformation', function ($query) use ($today, $seven_days_later) {
@@ -56,7 +58,8 @@ class HomeController extends Controller
                                 ->whereRaw('holiday_tbl.date <= CONCAT(YEAR(CURDATE()), DATE_FORMAT(users.dob, "-%m-%d"))');
                         });
                 })
-                ->select(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name'])->get(); // Select only necessary columns
+                // Select only necessary columns
+                ->select(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name'])->get();
 
             $totalCount = $users->count();
 

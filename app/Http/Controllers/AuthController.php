@@ -157,7 +157,8 @@ class AuthController extends Controller
         // Reset password
         try {
             $user->password = md5($validatedData['password']);
-            $user->token = ''; // Clear the reset token
+            // Clear the reset token
+            $user->token = '';
             $user->save();
 
             return response()->json(['status' => true, 'message' => 'Password reset successfully.'], 200);

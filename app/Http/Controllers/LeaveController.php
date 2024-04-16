@@ -127,7 +127,7 @@ class LeaveController extends Controller
         if ($leave->save()) {
             // Send email to HR and Admin
             $data = [
-                'user_name' => $user->full_name, // Assuming you have a 'full_name' attribute in your User model
+                'user_name' => $user->full_name,
                 'user_email' => $user->email,
                 'leave_type' => $leave->leave_type,
                 'leave_from' => $leave->leave_from,

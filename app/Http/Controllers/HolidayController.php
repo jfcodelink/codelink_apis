@@ -31,8 +31,6 @@ class HolidayController extends Controller
                 }
             };
 
-            // Set options for sorting, limiting, and offset
-
             // Fetch records
             $query = Holiday::query();
             $query->whereNull('is_deleted');
