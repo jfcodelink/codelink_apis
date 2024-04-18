@@ -74,11 +74,6 @@ class User extends Authenticatable
         return md5($password) === $this->password;
     }
 
-    public function otherInformation()
-    {
-        return $this->hasOne(OtherInformation::class, 'employee_id');
-    }
-
     public function payoutInformation()
     {
         return $this->hasOne(PayoutInformation::class, 'employee_id');
@@ -92,5 +87,15 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function otherInformation()
+    {
+        return $this->hasOne(OtherInformation::class, 'employee_id', 'id');
+    }
+
+    public function salaryRecords()
+    {
+        return $this->hasMany(Salary::class, 'user_id');
     }
 }

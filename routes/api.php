@@ -32,6 +32,7 @@ Route::group(['middleware' => ['check_login']], function () {
 
 
     Route::post('get_salary_records', [SalaryController::class, 'get_salary_records'])->name('get_salary_records');
+    Route::post('download_salary_slips', [SalaryController::class, 'download_salary_slips'])->name('download_salary_slips');
 
     Route::get("get_leaves", [LeaveController::class, "get_leaves"])->name('get_leaves');
     Route::post("add_leave", [LeaveController::class, "add_leave"])->name('add_leave');
