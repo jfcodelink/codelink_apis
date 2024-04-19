@@ -113,7 +113,6 @@
         width: 25%;
     }
 </style>
-
 <body>
     <table border="1" align="center" valign="center" cellpadding="0" cellspacing="0" width="100%">
         <tr>
@@ -129,13 +128,13 @@
             </td>
         </tr>
     </table>
-    <p style="text-align:center; margin: 5px;"><b>Pay Slip For {{ $user['pay_slip_for'] }}</b></p>
+    <p style="text-align:center; margin: 5px;"><b>Pay Slip For {{ $data['pay_slip_for'] }}</b></p>
     <table style="padding-bottom: 15px; border-bottom: 0px solid #2c2c2c;" border="1" align="center" valign="center"
         width="100%">
         <tr>
             <td style="  border-bottom: 2px solid #111; padding: 10px 0px; display: inline-block;    background: #f3f3f3; "
                 align="center" valign="center" width="100%">
-                <p style="text-align:center;"><b> {{ $employee_name }}</b></p>
+                <p style="text-align:center;"><b> {{ $data['employee_name'] }}</b></p>
             </td>
         </tr>
         <tr>
@@ -143,37 +142,37 @@
                 <table class="hkkkkk" style="Width: 100%;">
                     <tr>
                         <td width="200px;">Employee Number: </td>
-                        <td> {{ $employee_id }} </td>
+                        <td> {{ $data['emp_id'] }} </td>
                         <td width="250px;">CTC: </td>
-                        <td style="width: 25%;"> {{ $CTC }} </td>
+                        <td style="width: 25%;"> {{ $data['curr_salary'] }} </td>
                     </tr>
                     <tr>
                         <td>Designation: </td>
-                        <td> {{ $designation }}</td>
+                        <td> {{ $data['designation'] }}</td>
                         <td width="250px;">Working Days: </td>
-                        <td style="width: 25%;"> {{ $wd }}</td>
+                        <td style="width: 25%;"> {{ $data['total_working_days'] }}</td>
                     </tr>
                     <tr>
                         <td>Bank Name: </td>
-                        <td> {{ $bank_name }}</td>
+                        <td> {{ $data['bank_name'] }}</td>
                         <td width="250px;">Paid Days: </td>
-                        <td style="width: 25%;">{{ $ed }} </td>
+                        <td style="width: 25%;">{{ $data['employees_working_days'] }} </td>
                     </tr>
                     <tr>
                         <td>Bank Account: </td>
-                        <td> {{ $account_number }}</td>
+                        <td> {{ $data['bank_account'] }}</td>
                         <td width="250px;">Week Off: </td>
-                        <td style="width: 25%;">{{ $wo }} </td>
+                        <td style="width: 25%;">{{ $data['total_working_days'] }} </td>
                     </tr>
                     <tr>
                         <td>PAN No: </td>
-                        <td> {{ $pan_number }}</td>
+                        <td> {{ $data['pan'] }}</td>
                         <td width="250px;">LWP: </td>
-                        <td style="width: 25%;"> {{ $lwp }}</td>
+                        <td style="width: 25%;"> {{ $data['lwp'] }}</td>
                     </tr>
                     <tr>
                         <td>Date of Joining: </td>
-                        <td> {{ $date_of_joining }}</td>
+                        <td> {{ $data['date_of_joining'] }}</td>
                     </tr>
                 </table>
             </td>
@@ -194,44 +193,44 @@
                     </thead>
                     <tr>
                         <td>Basic</td>
-                        <td style="text-align:right;">{{ round($basic, 2) }}</td>
+                        <td style="text-align:right;">{{ $data['basic'] }}</td>
                         <td>P.F</td>
-                        <td style="border-right: 0px solid #2c2c2c;text-align:right;">{{ $pf }}</td>
+                        <td style="border-right: 0px solid #2c2c2c;text-align:right;">{{ $data['pf'] }}</td>
                     </tr>
                     <tr>
                         <td>H.R.A</td>
-                        <td style="text-align:right;"> {{ round($hra, 2) }}</td>
+                        <td style="text-align:right;"> {{ $data['hra'] }}</td>
                         <td>Professional Tax</td>
-                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $pt }}</td>
+                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $data['pt'] }}</td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td>TDS</td>
-                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $TDS }} </td>
+                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $data['tds'] }} </td>
                     </tr>
                     <tr>
                         <td>Other Addition</td>
-                        <td style="text-align:right;"> {{ $other_addition }}</td>
+                        <td style="text-align:right;"> {{ $data['other_addition'] }}</td>
                         <td>Other Deduction</td>
-                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $other_ded }}</td>
+                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $data['od'] }}</td>
                     </tr>
                     <tr>
                         <td class="f20"><b>Total Earnings </b></td>
-                        <td style="text-align:right;"> {{ $total_earnings }}</td>
+                        <td style="text-align:right;"> {{ $data['total_earnings'] }}</td>
                         <td class="f20"><b>Total Deductions</b></td>
-                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $total_deductions }}</td>
+                        <td style="border-right: 0px solid #2c2c2c;text-align:right;"> {{ $data['total_deductions'] }}</td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td class="f20"><b>Net Amount</b></td>
                         <td style="border-right: 0px solid #2c2c2c;text-align:right;">
-                            {{ $net_amount_with_other_addition }}</td>
+                            {{ $data['net_amount_with_other_addition'] }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" style="border-right: none;"><b>
-                                {{ $this->convertToIndianCurrency($net_amount_with_other_addition) }}</b></td>
+                                {{ $data['net_amount_text'] }}</b></td>
                     </tr>
                 </table>
             </td>

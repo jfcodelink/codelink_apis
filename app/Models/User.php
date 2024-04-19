@@ -76,7 +76,12 @@ class User extends Authenticatable
 
     public function payoutInformation()
     {
-        return $this->hasOne(PayoutInformation::class, 'employee_id');
+        return $this->hasMany(PayoutInformation::class, 'employee_id');
+    }
+
+    public function leaves()
+    {
+        return $this->hasMany(Leave::class);
     }
 
     public function skills()
@@ -97,5 +102,49 @@ class User extends Authenticatable
     public function salaryRecords()
     {
         return $this->hasMany(Salary::class, 'user_id');
+    }
+
+    public function getRoleTextAttribute()
+    {
+        return self::getRoleText($this->role_as);
+    }
+
+    public static function getRoleText($roleAs)
+    {
+        switch ($roleAs) {
+            case 1:
+                return "Admin";
+            case 2:
+                return "HR";
+            case 3:
+                return "Team Leader";
+            case 4:
+                return "Employee";
+            case 5:
+                return "Intern";
+            default:
+                return "";
+        }
+    }
+
+    public function getSubRoleTextAttribute()
+    {
+        return self::getSubRoleText($this->sub_role);
+    }
+
+    public static function getSubRoleText($subRole)
+    {
+        switch ($subRole) {
+            case 1:
+                return "Developer";
+            case 2:
+                return "Designer";
+            case 3:
+                return "Marketing";
+            case 4:
+                return "QA";
+            default:
+                return "";
+        }
     }
 }
