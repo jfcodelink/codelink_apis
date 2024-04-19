@@ -18,7 +18,7 @@ class AuthController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'email' => 'required|exists:users|max:191',
+                'email' => 'required|max:191',
                 'password' => 'required|min:6',
             ]);
             if ($validator->fails()) {
@@ -31,7 +31,7 @@ class AuthController extends Controller
                 ->first();
 
             if (!$user) {
-                return response()->json(['status' => false, 'message' => 'Employee does not exist!'], 422);
+                return response()->json(['status' => false, 'message' => 'Invalid login credentials. Please try again.'], 422);
             }
 
             if (!$user->status) {
