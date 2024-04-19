@@ -100,7 +100,8 @@ class SalaryController extends Controller
         $last4Letters = substr($account_number, -4);
         $account_number = $firstLetter . 'xxxxx' . $last4Letters;
 
-        $current_salary = $user->payoutInformation->first()->current_salary;
+        $current_salary = $user->payoutInformation->first()?->current_salary ?? 0;
+
 
         $days_arr = $this->getDaysCount($payroll_month);
 
@@ -112,7 +113,7 @@ class SalaryController extends Controller
         $employees_working_days = $days_arr['totalWorkingDays'] - $leave_count;
 
         $bonus = $salaryRecords ? $salaryRecords->bonus : 0;
-        $professional_tax = $salaryRecords ? $salaryRecords->professional_tax : 0;
+        $professional_tax = $salaryRecords && $current_salary != 0 ? $salaryRecords->professional_tax : 0;
         $other_deduction = $salaryRecords ? $salaryRecords->other_deduction : 0;
         $total_payroll = $salaryRecords ? $salaryRecords->total_payroll : 0;
 
@@ -744,7 +745,7 @@ class SalaryController extends Controller
             }
         }
 
-        $current_salary = $user->payoutInformation->first()->current_salary;
+        $current_salary = $user->payoutInformation->first()?->current_salary ?? 0;
 
         $salaries = Salary::forMonth($date)->get();
 
@@ -962,6 +963,7 @@ class SalaryController extends Controller
             $i += $divider == 10 ? 1 : 2;
             if ($number) {
                 $plural = (($counter = count($str)) && $number > 9) ? '' : null;
+
                 $str[] = ($number < 21) ? $words[$number] . ' ' . $digits[$counter] . $plural : $words[floor($number / 10) * 10] . ' ' . $words[$number % 10] . ' ' . $digits[$counter] . $plural;
             } else {
                 $str[] = null;
