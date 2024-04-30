@@ -33,6 +33,8 @@ class LeaveController extends Controller
                 });
             }
 
+            $query->selectRaw('*, DATE_FORMAT(leave_from, "%Y-%b-%d") as leave_from, DATE_FORMAT(leave_to, "%Y-%b-%d") as leave_to')->orderBy('id', 'DESC');
+
             $data = $query->get();
 
             if (empty($data)) {

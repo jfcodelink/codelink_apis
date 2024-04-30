@@ -59,7 +59,11 @@ class HomeController extends Controller
                         });
                 })
                 // Select only necessary columns
-                ->select(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name'])->get();
+                ->select(['users.id', 'users.profile_pic', 'users.dob', 'users.first_name', 'users.last_name', DB::raw('CASE
+                    WHEN DATE_FORMAT(users.dob, "%m-%d") = DATE_FORMAT(CURDATE(), "%m-%d") THEN "current"
+                    WHEN DATE_FORMAT(users.dob, "%m-%d") = DATE_FORMAT(CURDATE() + INTERVAL 1 DAY, "%m-%d") THEN "upcoming"
+                    ELSE NULL
+                END AS type')])->get();
 
             $totalCount = $users->count();
 
