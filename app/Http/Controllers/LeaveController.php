@@ -54,9 +54,9 @@ class LeaveController extends Controller
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'leave_type' => 'required|in:1,2',
-            'leave_from' => 'required|date',
-            'leave_to' => 'required_if:leave_type,1|date',
-            'date' => 'required_if:leave_type,2|date',
+            'leave_from' => $request->input('leave_type') == 1 ? 'required|date' : 'nullable',
+            'leave_to' => $request->input('leave_type') == 1 ? 'required|date' : 'nullable',
+            'date' => $request->input('leave_type') == 2 ? 'required|date' : 'nullable',
             'half_leave_type' => 'required_if:leave_type,2|in:0,1',
             'subject' => 'required|string',
         ]);
@@ -119,8 +119,8 @@ class LeaveController extends Controller
         $leave->status = 0;
         $leave->comments = '';
         $leave->leave_type = $request->input('leave_type');
-        $leave->leave_from = $request->input('leave_from');
-        $leave->leave_to = $request->input('leave_to');
+        $leave->leave_from = $request->leave_type == 1 ? $request->leave_from : $request->date ;
+        $leave->leave_to = $request->leave_type == 1 ? $request->leave_to : $request->date ;
         $leave->half_leave_type = $half_leave_type;
         $leave->leave_subject = $request->input('subject');
         $leave->date = date("Y-m-d");
