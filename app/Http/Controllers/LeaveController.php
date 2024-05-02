@@ -57,7 +57,7 @@ class LeaveController extends Controller
             'leave_from' => $request->input('leave_type') == 1 ? 'required|date' : 'nullable',
             'leave_to' => $request->input('leave_type') == 1 ? 'required|date' : 'nullable',
             'date' => $request->input('leave_type') == 2 ? 'required|date' : 'nullable',
-            'half_leave_type' => 'required_if:leave_type,2|in:0,1',
+            'half_leave_type' => 'required_if:leave_type,2|in:1,2',
             'subject' => 'required|string',
         ]);
 

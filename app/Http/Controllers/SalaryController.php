@@ -28,7 +28,7 @@ class SalaryController extends Controller
 
             $query->where('payroll_month', 'like', '%' . $year . '%');
 
-            $records = $query->get();
+            $records = $query->orderBy('payroll_month', 'desc')->get();
 
             $data = [];
             foreach ($records as $key => $record) {
