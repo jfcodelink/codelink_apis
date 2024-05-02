@@ -14,6 +14,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Mpdf\Mpdf;
 
@@ -79,6 +80,12 @@ class SalaryController extends Controller
 
     public function download_salary_slips(Request $request)
     {
+        $directory = public_path('salary_slips');
+
+        if (File::isDirectory($directory)) {
+            File::deleteDirectory($directory);
+        }
+
         $user = Auth::guard('sanctum')->user();
         $payroll_month = $request->has('payroll_month') ? $request->payroll_month : Carbon::now()->format('Y-m');
 
@@ -175,13 +182,27 @@ class SalaryController extends Controller
         $view = view('salary_pdf', compact('data'))->render();
 
         try {
-            $pdf = new Mpdf();
-            $pdf->WriteHTML($view);
-            $content = $pdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
+            $directory = public_path('salary_slips/');
 
-            return response($content, 200)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="example.pdf"');
+            // Create directory if it doesn't exist
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0777, true); // Create recursive directories
+            }
+
+            $filename = $user->first_name . "_" . $payroll_month . '.pdf';
+            $filepath = public_path('salary_slips/' . $filename);
+
+            $mpdf = new Mpdf();
+            $mpdf->WriteHTML($view);
+            $mpdf->Output($filepath, 'F');
+
+            $url = asset('public/salary_slips/' . $filename);
+
+            return response()->json(['status' => true, 'url' => $url]);
+
+            // return response($content, 200)
+            //     ->header('Content-Type', 'application/pdf')
+            //     ->header('Content-Disposition', 'attachment; filename="example.pdf"');
         } catch (\Exception $e) {
             Log::error('Error fetching user profile: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An unexpected error occurred. Please try again later.'], 500);
