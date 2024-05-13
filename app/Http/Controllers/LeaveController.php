@@ -25,8 +25,8 @@ class LeaveController extends Controller
                 ->whereNull('is_deleted')
                 ->where('leave_from', '!=', '0000-00-00');
 
-            if (!empty($params['search']['value'])) {
-                $searchValue = $params['search']['value'];
+            if (!empty($params['search_value'])) {
+                $searchValue = $params['search_value'];
                 $query->where(function ($query) use ($searchValue) {
                     $query->where('leave_from', 'like', "%$searchValue%")
                         ->orWhere('leave_subject', 'like', "%$searchValue%");

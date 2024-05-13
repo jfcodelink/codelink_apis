@@ -90,21 +90,22 @@ class AuthController extends Controller
 
     public function send_reset_link_email(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()], 422);
+        $email = $request->input('email');
+
+        // Perform custom validation
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['status' => false, 'message' => 'Invalid email format'], 422);
         }
-
-        $validatedData = $validator->validated();
-
-        $email = $validatedData['email'];
 
         $user = User::where('email', $email)->whereIn('role_as', [2, 3, 4, 5])->first();
 
         if (!$user) {
-            return response()->json(['status' => false, 'message' => 'User not found.'], 404);
+            return response()->json(['status' => false, 'message' => 'User with this email does not exist'], 422);
+        }
+
+        // Additional custom conditions if needed
+        if (!$user->isActive()) {
+            return response()->json(['status' => false, 'message' => 'User is not active'], 422);
         }
 
         $token = substr(md5(uniqid(rand(), 1)), 3, 10);

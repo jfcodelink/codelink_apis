@@ -147,4 +147,9 @@ class User extends Authenticatable
                 return "";
         }
     }
+
+    public function isActive()
+    {
+        return $this->status;
+    }
 }

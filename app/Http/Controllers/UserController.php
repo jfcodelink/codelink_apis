@@ -27,6 +27,8 @@ class UserController extends Controller
             $otherInformation = OtherInformation::where('employee_id', $user->id)->first();
 
             $skillIds = explode(',', $user->skills);
+            $skillIds = array_map('intval', $skillIds);
+
 
             $skills = UserSkill::whereIn('id', $skillIds)->pluck('skills');
             $userData = [
@@ -42,7 +44,7 @@ class UserController extends Controller
                 'role_as' => $user->role_as,
                 'sub_role' => $user->sub_role,
                 'about_me' => $user->about_me,
-                'skillIds' => $user->skills,
+                'skillIds' => $skillIds,
                 'skills' => $skills,
             ];
 
@@ -100,9 +102,9 @@ class UserController extends Controller
                 'about_me' => 'nullable',
                 'profile_pic' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
                 'change_pswd' => 'boolean',
-                'current_password' => 'required_if:change_pswd,true|min:8',
-                'password' => 'required_if:change_pswd,true|min:8|confirmed',
-                'password_confirmation' => 'required_if:change_pswd,true|min:8',
+                'current_password' => $request->input('change_pswd') == 1 ? 'required|min:8' : 'nullable',
+                'password' => $request->input('change_pswd') == 1 ? 'required|min:8|confirmed' : 'nullable',
+                'password_confirmation' => $request->input('change_pswd') == 1 ? 'required|min:8' : 'nullable',
             ]);
 
             if ($validator->fails()) {
