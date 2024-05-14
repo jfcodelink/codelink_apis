@@ -117,7 +117,7 @@ class UserController extends Controller
                 ->first();
 
             // Update password if required
-            if (isset($validatedData['change_pswd'])) {
+            if (isset($validatedData['change_pswd']) && $validatedData['change_pswd'] == 1) {
                 if ($user->validatePassword($validatedData['password'])) {
                     return response()->json(['status' => false, 'message' => 'Please try a different password! This password is already used!']);
                 }

@@ -112,7 +112,10 @@ class AuthController extends Controller
         $user->token = $token;
         $user->save();
 
-        $link = url('users/reset_password') . '?uid=' . base64_encode($user->id) . '&token=' . $token . '&email=' . $email;
+        
+        $url = config('services.reset_password_url.' . config('app.env'));
+
+        $link = $url . '?uid=' . base64_encode($user->id) . '&token=' . $token . '&email=' . $email;
 
         try {
             Mail::to($email)->send(new ResetPasswordMail($user, $link));

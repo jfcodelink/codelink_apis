@@ -30,5 +30,11 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'reset_password_url' => [
+        'production' => 'https://erp.codelinkinfotech.com/users/reset_password',
+        'development' => 'https://erp.codelinkinfotech.com/development/users/reset_password',
+        'local' => 'http://localhost/codelink-system/users/reset_password',
+    ],
+
 
 ];
